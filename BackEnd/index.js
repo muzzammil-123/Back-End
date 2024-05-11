@@ -1,157 +1,141 @@
-const express = require("express");
-require("dotenv").config();
+require('dotenv').config()
+const express = require('express');
+const app = express()
 
-const app = express();
-const port = 3000;
-const user = {
-  users: [
+const users = [
     {
-      id: 1,
-      name: "John",
-      last_name: "Doe",
-      phone_number: "+1234567890",
-      country: "USA",
+        "name": "John Doe",
+        "id": "001",
+        "email": "john.doe@example.com",
+        "phone_number": "+1234567890"
     },
     {
-      id: 2,
-      name: "Alice",
-      last_name: "Smith",
-      phone_number: "+1987654321",
-      country: "Canada",
+        "name": "Jane Smith",
+        "id": "002",
+        "email": "jane.smith@example.com",
+        "phone_number": "+1987654321"
     },
     {
-      id: 3,
-      name: "Michael",
-      last_name: "Johnson",
-      phone_number: "+447890123456",
-      country: "UK",
+        "name": "Michael Johnson",
+        "id": "003",
+        "email": "michael.johnson@example.com",
+        "phone_number": "+1555123456"
     },
     {
-      id: 4,
-      name: "Sophia",
-      last_name: "Garcia",
-      phone_number: "+34678901234",
-      country: "Spain",
+        "name": "Emily Brown",
+        "id": "004",
+        "email": "emily.brown@example.com",
+        "phone_number": "+1444123456"
     },
     {
-      id: 5,
-      name: "Mohammed",
-      last_name: "Ali",
-      phone_number: "+966555555555",
-      country: "Saudi Arabia",
+        "name": "Daniel Wilson",
+        "id": "005",
+        "email": "daniel.wilson@example.com",
+        "phone_number": "+1777123456"
     },
     {
-      id: 6,
-      name: "Sakura",
-      last_name: "Tanaka",
-      phone_number: "+81345678901",
-      country: "Japan",
+        "name": "Sarah Martinez",
+        "id": "006",
+        "email": "sarah.martinez@example.com",
+        "phone_number": "+1333123456"
     },
     {
-      id: 7,
-      name: "Liam",
-      last_name: "Johnson",
-      phone_number: "+61234567890",
-      country: "Australia",
+        "name": "Matthew Taylor",
+        "id": "007",
+        "email": "matthew.taylor@example.com",
+        "phone_number": "+1888123456"
     },
     {
-      id: 8,
-      name: "Emma",
-      last_name: "Brown",
-      phone_number: "+61456789012",
-      country: "Australia",
+        "name": "Jessica Anderson",
+        "id": "008",
+        "email": "jessica.anderson@example.com",
+        "phone_number": "+1222123456"
     },
     {
-      id: 9,
-      name: "Lucas",
-      last_name: "Martinez",
-      phone_number: "+5491123456789",
-      country: "Argentina",
+        "name": "David Thomas",
+        "id": "009",
+        "email": "david.thomas@example.com",
+        "phone_number": "+1999123456"
     },
     {
-      id: 10,
-      name: "Isabella",
-      last_name: "Rossi",
-      phone_number: "+390123456789",
-      country: "Italy",
+        "name": "Amanda Garcia",
+        "id": "010",
+        "email": "amanda.garcia@example.com",
+        "phone_number": "+1666123456"
     },
     {
-      id: 11,
-      name: "Benjamin",
-      last_name: "Nguyen",
-      phone_number: "+84901234567",
-      country: "Vietnam",
+        "name": "James Hernandez",
+        "id": "011",
+        "email": "james.hernandez@example.com",
+        "phone_number": "+1555123456"
     },
     {
-      id: 12,
-      name: "Olivia",
-      last_name: "Lee",
-      phone_number: "+82234567890",
-      country: "South Korea",
+        "name": "Jennifer Lopez",
+        "id": "012",
+        "email": "jennifer.lopez@example.com",
+        "phone_number": "+1444123456"
     },
     {
-      id: 13,
-      name: "Ethan",
-      last_name: "Wang",
-      phone_number: "+8612345678901",
-      country: "China",
+        "name": "Christopher Lee",
+        "id": "013",
+        "email": "christopher.lee@example.com",
+        "phone_number": "+1333123456"
     },
     {
-      id: 14,
-      name: "Charlotte",
-      last_name: "Dubois",
-      phone_number: "+33123456789",
-      country: "France",
+        "name": "Maria Perez",
+        "id": "014",
+        "email": "maria.perez@example.com",
+        "phone_number": "+1222123456"
     },
     {
-      id: 15,
-      name: "Amelia",
-      last_name: "Gomez",
-      phone_number: "+34987654321",
-      country: "Spain",
+        "name": "Robert Nguyen",
+        "id": "015",
+        "email": "robert.nguyen@example.com",
+        "phone_number": "+1999123456"
     },
     {
-      id: 16,
-      name: "Noah",
-      last_name: "Andersen",
-      phone_number: "+4567890123",
-      country: "Denmark",
+        "name": "Michelle King",
+        "id": "016",
+        "email": "michelle.king@example.com",
+        "phone_number": "+1666123456"
     },
     {
-      id: 17,
-      name: "Ava",
-      last_name: "Kovacs",
-      phone_number: "+3612345678",
-      country: "Hungary",
+        "name": "William Smith",
+        "id": "017",
+        "email": "william.smith@example.com",
+        "phone_number": "+1555123456"
     },
     {
-      id: 18,
-      name: "William",
-      last_name: "Müller",
-      phone_number: "+4912345678901",
-      country: "Germany",
+        "name": "Kimberly Davis",
+        "id": "018",
+        "email": "kimberly.davis@example.com",
+        "phone_number": "+1444123456"
     },
     {
-      id: 19,
-      name: "Mia",
-      last_name: "Silva",
-      phone_number: "+5511987654321",
-      country: "Brazil",
+        "name": "Mark Martinez",
+        "id": "019",
+        "email": "mark.martinez@example.com",
+        "phone_number": "+1333123456"
     },
     {
-      id: 20,
-      name: "James",
-      last_name: "Taylor",
-      phone_number: "+6123456789",
-      country: "New Zealand",
-    },
-  ],
-};
+        "name": "Ashley Wilson",
+        "id": "020",
+        "email": "ashley.wilson@example.com",
+        "phone_number": "+1222123456"
+    }
+];
 
-app.get("/api/user", (req, res) => {
-  res.json(user.users);
-});
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
 
-app.listen(process.env.PORT || port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+app.get('/api/user', (req, res) => {
+    res.json(users)
+})
+
+
+const port = process.env.PORT || 3000
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+})
