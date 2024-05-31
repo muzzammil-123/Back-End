@@ -3,24 +3,25 @@ import express from 'express'
 const app = express()
 import ejs from 'ejs'
 
+
 let storage = multer.diskStorage({
-    destination : (req, file , cb)=>{
+    destination: (req, file, cb) => {
         cb(null, "./upload")
     },
-    filename: (req, file , cb )=>{
+    filename: (req, file, cb) => {
         cb(null, `${file.originalname}`)
     }
 })
 
-const upload = multer({storage}).single('file')
+let upload = multer({ storage }).single('file')
 
-app.set('view engine', 'ejs')
+app.set("view engine", "ejs")
 
-app.get('/', upload, (req, res)=>{
-    res.render('index')
+app.get("/", upload, (req, res) => {
+    res.render("index")
 })
 
-app.post('/upload', upload, (req, res)=>{
+app.post("/upload", upload,(req, res) => {
     res.send(`File uploaded successfully`)
 })
 
