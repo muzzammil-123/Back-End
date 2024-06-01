@@ -10,3 +10,7 @@ let storage = multer.diskStorage({
         cb(null, `${file.fieldname}_${uniqueSuffix}`)
     }
 })
+
+let upload  = multer({storage})
+
+export default upload
