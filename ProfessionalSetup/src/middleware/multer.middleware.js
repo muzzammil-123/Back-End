@@ -2,7 +2,7 @@ import multer from 'multer'
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, '/temp')
+    cb(null, 'public/temp')
   },
   filename: (req, file, cb) => {
     let uniqueSuffix = Date.now() * Math.round(Math.random() * 1e9)

@@ -1,21 +1,21 @@
-import {v2 as cloudinary} from 'cloudinary'
-import fs from 'fs'
+import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
-  cloud_name: process.env.cloud_name,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-})
+  cloud_name: 'deryzkt9p',
+  api_key: '794782777771589',
+  api_secret: '3kcdtwuVdb_dAbSVGh6yeqCfkqQ'
+});
 
 const uploadOnCloudinary = async (filepath) => {
   try {
     if (!filepath) {
       return null
     }
-    const result = cloudinary.uploader.upload(filepath, {
-      public_id : `shoes`
+    const result = await cloudinary.uploader.upload(filepath, {
+      public_id: `shoes`
     })
     console.log(`File uploaded Successfully, ${result.url}`)
+    return result.url
   } catch (error) {
     console.log(error)
     fs.unlinkSync(filepath)

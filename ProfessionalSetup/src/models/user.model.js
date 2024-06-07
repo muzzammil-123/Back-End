@@ -19,7 +19,7 @@ let userSchema = new mongoose.Schema(
       required: true,
       default: 'user',
     },
-    avatar: {
+    profileImage: {
       type: String,
       required: true,
     },
