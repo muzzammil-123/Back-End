@@ -1,41 +1,58 @@
-import { User } from '../models/user.model.js'
-import uploadOnCloudinary from '../utils/cloudinary.js'
+import { User } from "../models/user.model.js";
+import uploadOnCloudinary from "../utils/cloudinary.js";
 
-let userRegister = async (req, res, next) => {
+const generateAccessAndRefreshToken = async () => {
   try {
-    const { fullname, username, password, email, role } = req.body
-    if (!fullname || !username || !password || !email || !role) {
-      return res.status(400).json({
-        message: `Please provide all fields`,
+    const user = await User.findById(user._id)
+    const accessToken = user.generateAccessToken()
+    const refreshToken = user.generateRefreshToken()
+
+    user.refreshToken = refreshToken
+    await user.save({ validateBeforeSave: false })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      message: 'Something went wrong'
+    })
+  }
+}
+
+
+const userRegister = async (req, res, next) => {
+  try {
+    const { fullname, username, email, role, password } = req.body;
+    if (!fullname || !username || !email || !role || !password) {
+      res.status(400).json({
+        message: "Plz provide all fields"
       })
     }
 
     const existedUser = await User.findOne({
-      $or: [{ username }, { email }],
+      $or: [{ username }, { email }]
     })
 
     if (existedUser) {
-      return res.status(400).json({
-        message: `User already exists`,
+      res.status(400).json({
+        message: "Username or email already exists"
       })
+
     }
 
-    const profileImagePath = req.files.profileImage[0].path
-
-    console.log(profileImagePath)
-
+    const profileImagePath = req.files.profileImage[0].path;
+    // const coverImagePath = req.files.coverImage[0].path
 
     if (!profileImagePath) {
-      return res.status(400).json({
-        message: `Please provide profile image`,
+      res.status(400).json({
+        message: "Profile Image is required"
       })
     }
 
     const profileImage = await uploadOnCloudinary(profileImagePath)
+    // const coverImage = await uploadOnCloudinary(coverImagePath)
 
     if (!profileImage) {
-      return res.status(400).json({
-        message: `Error uploading profile image`,
+      res.status(400).json({
+        message: "Profile Image upload Failed"
       })
     }
 
@@ -43,29 +60,71 @@ let userRegister = async (req, res, next) => {
       fullname,
       username,
       email,
-      password,
       role,
+      password,
       profileImage: profileImage.url,
+      // coverImage: coverImage.url || null
     })
 
     const userCreated = await User.findById(user._id).select('-password -refreshToken')
+
     if (!userCreated) {
-      return res.status(400).json({
-        message: `User not created`,
+      res.status(400).json({
+        message: "User creation failed"
       })
     }
 
-    return res.status(201).json({
-      message: `User created successfully`,
-      user: userCreated
-    })
+    if (userCreated) {
+      res.status(201).json({
+        message: 'User Created Successfully 🎉🎉',
+        user: userCreated
+      })
+    }
+
 
   } catch (error) {
     console.log(error)
     res.status(500).json({
-      message: `User didnot register`,
+      message: 'Something went wrong'
     })
   }
 }
 
-export default userRegister
+const userLogin = async (req, res, next) => {
+  try {
+    const { username, email, password } = req.body
+    if ((!username || !email) && !password) {
+      res.status(400).json({
+        message: "Plz provide all fields"
+      })
+    }
+
+    const user = await User.findOne({
+      $or: [{ username }, { email }]
+    })
+
+    if (!user) {
+      res.status(400).json({
+        message: "User not Found"
+      })
+    }
+
+    const isPasswordMatch = await user.isPasswordMatch(password)
+
+    if (!isPasswordMatch) {
+      res.status(400).json({
+        message: "Incorrect password"
+      })
+    }
+
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      message: "Something went wrong"
+    })
+  }
+}
+
+
+export default userRegister 

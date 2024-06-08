@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
-
+import fs from 'fs'
 cloudinary.config({
   cloud_name: 'deryzkt9p',
   api_key: '794782777771589',
@@ -15,7 +15,7 @@ const uploadOnCloudinary = async (filepath) => {
       public_id: `shoes`
     })
     console.log(`File uploaded Successfully, ${result.url}`)
-    return result.url
+    return result
   } catch (error) {
     console.log(error)
     fs.unlinkSync(filepath)
