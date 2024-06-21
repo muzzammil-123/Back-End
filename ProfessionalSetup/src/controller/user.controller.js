@@ -9,6 +9,7 @@ const generateAccessAndRefreshToken = async () => {
 
     user.refreshToken = refreshToken
     await user.save({ validateBeforeSave: false })
+    return { accessToken, refreshToken }
   } catch (error) {
     console.log(error)
     res.status(500).json({
@@ -90,41 +91,7 @@ const userRegister = async (req, res, next) => {
   }
 }
 
-const userLogin = async (req, res, next) => {
-  try {
-    const { username, email, password } = req.body
-    if ((!username || !email) && !password) {
-      res.status(400).json({
-        message: "Plz provide all fields"
-      })
-    }
 
-    const user = await User.findOne({
-      $or: [{ username }, { email }]
-    })
-
-    if (!user) {
-      res.status(400).json({
-        message: "User not Found"
-      })
-    }
-
-    const isPasswordMatch = await user.isPasswordMatch(password)
-
-    if (!isPasswordMatch) {
-      res.status(400).json({
-        message: "Incorrect password"
-      })
-    }
-
-
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      message: "Something went wrong"
-    })
-  }
-}
 
 
 export default userRegister 
