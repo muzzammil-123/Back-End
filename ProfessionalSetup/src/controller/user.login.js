@@ -1,59 +1,72 @@
 import { User } from '../models/user.model.js'
 
-const generateRefreshandAccessToken = async (userId) =>{
-  const user = await User.findById(userId)
-  const refreshToken = user.generateRefreshToken()
-  const accessToken = user.generateAccessToken()
-  
-  user.refreshToken = refreshToken
-  await user.save({ validateBeforeSave: false })
-  return { accessToken, refreshToken }
+const generateAccessAndRefreshToken = async (userId) => {
+  try {
+    const user = await User.findById(userId)
+    const accessToken = user.generateAccessToken()
+    const refreshToken = user.generateRefreshToken()
+
+    user.refreshToken = refreshToken
+    await user.save({ validateBeforeSave: false })
+    return { accessToken, refreshToken }
+  } catch (error) {
+    console.log(error)
+    throw new Error('Something went wrong in token generation')
+  }
 }
 
- const userLogin = async (req, res, next) => {
+const userLogin = async (req, res, next) => {
   try {
-    const { username, password } = req.body
-    if(!username || !password) {
-      res.status(400).json({
-        message: "Plz provide all fields"
+    const { username, password, email } = req.body
+    if (!username || !password || !email) {
+      return res.status(400).json({
+        message: "Please provide all fields"
       })
     }
 
     const user = await User.findOne({
-      $or :[{username}, {email}] 
-  })
+      $or: [{ username }, { email }]
+    })
 
-    if(!user) {
-      res.status(400).json({
+    if (!user) {
+      return res.status(400).json({
         message: "User not found"
       })
     }
 
     const isPasswordMatch = await user.isPasswordMatch(password)
 
-    if(!isPasswordMatch) {
-      res.status(400).json({
+    if (!isPasswordMatch) {
+      return res.status(400).json({
         message: "Invalid credentials"
       })
     }
 
-    const { accessToken, refreshToken } = await user.generateRefreshandAccessToken()
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
 
+    const loggedInUser = await User.findById(user._id).select('-password -refreshToken')
 
-    
-    res.status(200).json({
-      accessToken,
-      refreshToken,
-      message: "Login successful",
-      user : user
-    })
+    const option = {
+      httpOnly: true,
+      secure: true
+    }
+
+    return res.status(200)
+      .cookie("accessToken", accessToken, option)
+      .cookie("refreshToken", refreshToken, option)
+      .json({
+        message: "Login successful",
+        user: loggedInUser,
+        accessToken,
+        refreshToken
+      })
 
   } catch (error) {
     res.status(500).json({
-      message : 'Something went wrong'
+      message: 'Something went wrong'
     })
+    console.log("Error : ", error)
   }
-  console.log("Error : " , error)
-} 
+}
 
-export default userLogin  
+export default userLogin

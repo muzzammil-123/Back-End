@@ -1,22 +1,7 @@
 import { User } from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 
-const generateAccessAndRefreshToken = async () => {
-  try {
-    const user = await User.findById(user._id)
-    const accessToken = user.generateAccessToken()
-    const refreshToken = user.generateRefreshToken()
 
-    user.refreshToken = refreshToken
-    await user.save({ validateBeforeSave: false })
-    return { accessToken, refreshToken }
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      message: 'Something went wrong'
-    })
-  }
-}
 
 
 const userRegister = async (req, res, next) => {
@@ -68,6 +53,7 @@ const userRegister = async (req, res, next) => {
     })
 
     const userCreated = await User.findById(user._id).select('-password -refreshToken')
+
 
     if (!userCreated) {
       res.status(400).json({
