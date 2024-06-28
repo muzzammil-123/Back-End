@@ -76,7 +76,7 @@ userSchema.methods.generateRefreshToken = async function (){
     _id: user.id,
     role: user.role,
     email: user.email,
-    usrname: user.username
+    usrname: user.username    
   }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY })
 }
 
