@@ -1,9 +1,6 @@
 import { User } from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 
-
-
-
 const   userRegister = async (req, res, next) => {
   try {
     const { fullname, username, email, role, password } = req.body;
@@ -76,8 +73,5 @@ const   userRegister = async (req, res, next) => {
     })
   }
 }
-
-
-
 
 export default userRegister 
