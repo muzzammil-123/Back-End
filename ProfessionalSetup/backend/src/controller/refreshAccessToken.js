@@ -40,7 +40,7 @@ const refreshAccessToken = async (req, res, next) => {
             })
         }
 
-         const { accessToken, newRefreshToken } = await generateAccessAndRefreshToken(user._id)
+        const { accessToken, newRefreshToken } = await generateAccessAndRefreshToken(user._id)
 
         const option = {
             httpOnly: true,
