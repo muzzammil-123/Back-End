@@ -21,23 +21,23 @@ const   userRegister = async (req, res, next) => {
 
     }
 
-    const profileImagePath = req.files.profileImage[0].path;
-    // const coverImagePath = req.files.coverImage[0].path
+    // const profileImagePath = req.files.profileImage[0].path;
+    // // const coverImagePath = req.files.coverImage[0].path
 
-    if (!profileImagePath) {
-      res.status(400).json({
-        message: "Profile Image is required"
-      })
-    }
+    // if (!profileImagePath) {
+    //   res.status(400).json({
+    //     message: "Profile Image is required"
+    //   })
+    // }
 
-    const profileImage = await uploadOnCloudinary(profileImagePath)
-    // const coverImage = await uploadOnCloudinary(coverImagePath)
+    // const profileImage = await uploadOnCloudinary(profileImagePath)
+    // // const coverImage = await uploadOnCloudinary(coverImagePath)
 
-    if (!profileImage) {
-      res.status(400).json({
-        message: "Profile Image upload Failed"
-      })
-    }
+    // if (!profileImage) {
+    //   res.status(400).json({
+    //     message: "Profile Image upload Failed"
+    //   })
+    // }
 
     const user = await User.create({
       fullname,
@@ -45,8 +45,7 @@ const   userRegister = async (req, res, next) => {
       email,
       role,
       password,
-      profileImage: profileImage.url,
-      // coverImage: coverImage.url || null
+      // profileImage: profileImage.url,
     })
 
     const userCreated = await User.findById(user._id).select('-password -refreshToken')
