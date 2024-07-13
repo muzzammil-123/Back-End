@@ -4,19 +4,19 @@ import jwt from "jsonwebtoken";
 const userRegister = async (req, res) => {
     try {
         const { username, email, password } = req.body;
-
         console.log(req.body);
-        const hashedPassword = await bcrypt.hash(password, 10); // Create a new User instance
+        const hashedPassword = await bcrypt.hash(password, 10); 
         const newUser = new User({
             username,
             email,
             password: hashedPassword,
         });
+        
 
         await newUser.save();
 
         res.status(200).json({ msg: "User Created" });
-    } catch (error) {
+        } catch (error) {
         console.error("Error in user registration:", error);
         res.status(500).json({ msg: "Failed to register user" });
     }
