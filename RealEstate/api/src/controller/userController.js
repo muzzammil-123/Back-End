@@ -46,17 +46,21 @@ const userLogin = async (req, res) => {
         );
 
         const option = {
-            httpOnly : true,
-            secure : true
+            httpOnly: true,
+            secure: true
         }
-
-        res.status(200).json({ msg: "Logged in successfully" }).cookie("token", token, option);
+        res.cookie("token", token, option);
+        res.status(200).json({ msg: "Logged in successfully" })
     } catch (error) {
         console.error("Error in user login:", error);
         res.status(500).json({ msg: "Failed to login" });
     }
 };
 
-const userLogout = async (req, res) => { };
+const userLogout = async (req, res) => {
+    res.clearCookie("token");
+    res.status(200)
+    res.json({ msg: "Logged out successfully" });
+};
 
 export { userRegister, userLogin, userLogout };
