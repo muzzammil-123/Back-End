@@ -1,15 +1,14 @@
 import { useContext, useState } from "react";
 import "./profileUpdatePage.scss";
 import { AuthContext } from "../../context/AuthContext";
-import apiRequest from "../../lib/apiRequest";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import UploadWidget from "../../components/uploadWidget/UploadWidget";
 
 function ProfileUpdatePage() {
   const { currentUser, updateUser } = useContext(AuthContext);
   const [error, setError] = useState("");
   const [avatar, setAvatar] = useState([]);
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,16 +18,21 @@ function ProfileUpdatePage() {
     const { username, email, password } = Object.fromEntries(formData);
 
     try {
-      const res = await apiRequest.put(`/users/${currentUser.id}`, {
+      const res = await axios.put(`http://localhost:3000/user/update`, {
         username,
         email,
         password,
-        avatar:avatar[0]
+        avatar: avatar[0],
       });
+
+      // Update user context or state if needed
       updateUser(res.data);
+
+      // Redirect to profile page or any desired route
       navigate("/profile");
+
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setError(err.response.data.message);
     }
   };
@@ -61,11 +65,15 @@ function ProfileUpdatePage() {
             <input id="password" name="password" type="password" />
           </div>
           <button>Update</button>
-          {error && <span>error</span>}
+          {error && <span>{error}</span>}
         </form>
       </div>
       <div className="sideContainer">
-        <img src={avatar[0] || currentUser.avatar || "/noavatar.jpg"} alt="" className="avatar" />
+        <img
+          src={avatar[0] || currentUser.avatar || "/noavatar.jpg"}
+          alt=""
+          className="avatar"
+        />
         <UploadWidget
           uwConfig={{
             cloudName: "lamadev",

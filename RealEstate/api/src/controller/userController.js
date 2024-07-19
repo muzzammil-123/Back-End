@@ -5,18 +5,18 @@ const userRegister = async (req, res) => {
     try {
         const { username, email, password } = req.body;
         console.log(req.body);
-        const hashedPassword = await bcrypt.hash(password, 10); 
+        const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
             username,
             email,
             password: hashedPassword,
         });
-        
+
 
         await newUser.save();
 
         res.status(200).json({ msg: "User Created" });
-        } catch (error) {
+    } catch (error) {
         console.error("Error in user registration:", error);
         res.status(500).json({ msg: "Failed to register user" });
     }
@@ -49,8 +49,7 @@ const userLogin = async (req, res) => {
             httpOnly: true,
             secure: true
         }
-        res.cookie("token", token, option);
-        res.status(200).json({ msg: "Logged in successfully" })
+       return res.cookie("token", token, option).status(200).json({ msg: "Logged in successfully", token, user });
     } catch (error) {
         console.error("Error in user login:", error);
         res.status(500).json({ msg: "Failed to login" });
@@ -63,4 +62,20 @@ const userLogout = async (req, res) => {
     res.json({ msg: "Logged out successfully" });
 };
 
-export { userRegister, userLogin, userLogout };
+const userUpdate = async (req, res) => {
+    const userId = req.userId;
+    try {
+        const user = await User.findById(userId);
+        user.username = req.body.username;
+        user.email = req.body.email;
+        user.password = req.body.password;
+        user.avatar = req.body.avatar;
+        await user.save();
+        res.status(200).json({ msg: "User updated successfully" });
+
+    } catch (error) {
+        res.status(500).json({ msg: "Failed to update user" });
+    }
+}
+
+export { userRegister, userLogin, userLogout , userUpdate };

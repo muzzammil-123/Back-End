@@ -1,15 +1,13 @@
 import { useContext, useState } from "react";
 import "./login.scss";
 import { Link, useNavigate } from "react-router-dom";
-import apiRequest from "../../lib/apiRequest";
+import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 
 function Login() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  const {updateUser} = useContext(AuthContext)
-
+  const { updateUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,20 +20,30 @@ function Login() {
     const password = formData.get("password");
 
     try {
-      const res = await apiRequest.post("/auth/login", {
+      const res = await axios.post("http://localhost:3000/user/login", {
         username,
         password,
       });
 
-      updateUser(res.data)
+      // Store the token in localStorage
+      localStorage.setItem("token", res.data.token);
 
+      // Set Authorization header globally for axios
+      axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
+
+      // Update user context or state if needed
+      updateUser(res.data);
+
+      // Redirect to home page or any desired route
       navigate("/");
+
     } catch (err) {
       setError(err.response.data.message);
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="login">
       <div className="formContainer">

@@ -18,6 +18,8 @@ app.use(cookieParser())
 app.use(cors())
 import authRouter from './router/authRouter.js'
 app.use('/user', authRouter)
+import testRouter from './router/testRouter.js'
+app.use('/test', testRouter)
 connectDB().then(() => {
     app.listen(3000, () => {
         console.log(`Server running on port  3000`)
