@@ -1,49 +1,50 @@
 import { useContext, useState } from "react";
 import "./login.scss";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { AuthContext } from "../../context/AuthContext";
+import apiRequest from "../../lib/apiRequest.js";
+import { AuthContext } from "../../context/AuthContext.jsx";
 
 function Login() {
-  const [error, setError] = useState("");
+  const [loginError, setloginError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const { updateUser } = useContext(AuthContext);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const data = new FormData(e.target);
+    const username = data.get("username");
+    const password = data.get("password");
     setIsLoading(true);
-    setError("");
-    const formData = new FormData(e.target);
-
-    const username = formData.get("username");
-    const password = formData.get("password");
-
+    setloginError("");
     try {
-      const res = await axios.post("http://localhost:3000/user/login", {
+      // const response = await axios.post(
+      //   "http://localhost:3000/api/auth/register",
+      //   {
+      //     username,
+      //     email,
+      //     password,
+      //   }
+      // );
+      const response = await apiRequest.post("/auth/login", {
         username,
         password,
       });
+      setIsLoading(false);
+      
+      updateUser(response.data);
 
-      // Store the token in localStorage
-      localStorage.setItem("token", res.data.token);
+      console.log(response.data);
 
-      // Set Authorization header globally for axios
-      axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
-
-      // Update user context or state if needed
-      updateUser(res.data);
-
-      // Redirect to home page or any desired route
       navigate("/");
-
-    } catch (err) {
-      setError(err.response.data.message);
-    } finally {
+    } catch (error) {
+      console.log(error);
+      setloginError(error.response.data.message);
       setIsLoading(false);
     }
   };
-
   return (
     <div className="login">
       <div className="formContainer">
@@ -59,12 +60,12 @@ function Login() {
           />
           <input
             name="password"
-            type="password"
             required
+            type="password"
             placeholder="Password"
           />
           <button disabled={isLoading}>Login</button>
-          {error && <span>{error}</span>}
+          {loginError && <p>{loginError}</p>}
           <Link to="/register">{"Don't"} you have an account?</Link>
         </form>
       </div>

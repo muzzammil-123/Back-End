@@ -1,32 +1,40 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import cookieParser from 'cookie-parser'
-import connectDB from './db/db.js'
-import cors from 'cors'
+import express from "express";
+import connectDB from "./db/index.js";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 
+const app = express();
 
 dotenv.config({
-    path: './.env'
-})
+  path: "./.env",
+});
 
-const app = express()
+import authRoute from "./routes/auth.route.js";
+import testRoute from "./routes/test.route.js";
+import userRoute from "./routes/user.route.js";
+//allowing json to be sent in the body of the request
+app.use(express.json());
 
-app.use(express.json({ limit: '16kb' }))
-app.use(express.urlencoded({ extended: true, limit: '16kb' }))
-app.use(express.static('public'))
-app.use(cookieParser())
-app.use(cors())
-import authRouter from './router/authRouter.js'
-app.use('/user', authRouter)
-import testRouter from './router/testRouter.js'
-app.use('/test', testRouter)
-connectDB().then(() => {
-    app.listen(3000, () => {
-        console.log(`Server running on port  3000`)
+app.use(
+  cors({
+    origin: process.env.CLIENT_SIDE_URL,
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 
-    })
-    app.get('/', (req, res) => {
-        res.send('Hello World!')
-    })
+app.use("/api/users", userRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/test", testRoute);
 
-})
+connectDB()
+  .then(() => {
+    console.log("Connected to database");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});

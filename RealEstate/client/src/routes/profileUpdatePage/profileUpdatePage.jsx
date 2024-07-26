@@ -1,41 +1,35 @@
 import { useContext, useState } from "react";
-import "./profileUpdatePage.scss";
 import { AuthContext } from "../../context/AuthContext";
+import "./profileUpdatePage.scss";
+import apiRequest from "../../lib/apiRequest.js";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import UploadWidget from "../../components/uploadWidget/UploadWidget";
+import UploadWidget from "../../components/uploadWidget/UploadWidget.jsx";
 
 function ProfileUpdatePage() {
   const { currentUser, updateUser } = useContext(AuthContext);
   const [error, setError] = useState("");
-  const [avatar, setAvatar] = useState([]);
+  const [avatar, setAvatar] = useState(currentUser.user.avatar);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-
     const { username, email, password } = Object.fromEntries(formData);
-
     try {
-      const res = await axios.put(`http://localhost:3000/user/update`, {
+      const res = await apiRequest.put(`/users/${currentUser.user._id}`, {
         username,
         email,
         password,
-        avatar: avatar[0],
+        avatar,
       });
-
-      // Update user context or state if needed
       updateUser(res.data);
-
-      // Redirect to profile page or any desired route
       navigate("/profile");
-
-    } catch (err) {
-      console.error(err);
-      setError(err.response.data.message);
+    } catch (error) {
+      setError(error.response.data.message);
     }
   };
+
+  const avatarSrc = avatar || "/noavatar.png";
 
   return (
     <div className="profileUpdatePage">
@@ -48,7 +42,7 @@ function ProfileUpdatePage() {
               id="username"
               name="username"
               type="text"
-              defaultValue={currentUser.username}
+              defaultValue={currentUser?.user.username || ""}
             />
           </div>
           <div className="item">
@@ -57,7 +51,7 @@ function ProfileUpdatePage() {
               id="email"
               name="email"
               type="email"
-              defaultValue={currentUser.email}
+              defaultValue={currentUser?.user.email || ""}
             />
           </div>
           <div className="item">
@@ -65,24 +59,37 @@ function ProfileUpdatePage() {
             <input id="password" name="password" type="password" />
           </div>
           <button>Update</button>
-          {error && <span>{error}</span>}
+          {error && <span className="error">{error}</span>}
         </form>
       </div>
       <div className="sideContainer">
-        <img
-          src={avatar[0] || currentUser.avatar || "/noavatar.jpg"}
-          alt=""
-          className="avatar"
-        />
+        <img src={avatarSrc} alt="User Avatar" className="avatar" />
         <UploadWidget
           uwConfig={{
-            cloudName: "lamadev",
-            uploadPreset: "estate",
+            cloudName: "itskode",
+            uploadPreset: "real-estate",
+            sources: ["local", "camera", "url"],
+            showAdvancedOptions: false,
+            cropping: false,
             multiple: false,
-            maxImageFileSize: 2000000,
+            defaultSource: "local",
+            maxFileSize: 10000000,
             folder: "avatars",
+            tags: ["avatar"],
+            resourceType: "image",
+            clientAllowedFormats: ["png", "jpg", "jpeg"],
+            maxImageFileSize: 10000000,
+            maxVideoFileSize: 10000000,
+            maxImageWidth: 1000,
+            maxImageHeight: 1000,
+            croppingAspectRatio: 1,
+            croppingShape: "square",
+            croppingGravity: "faces",
+            croppingDefaultZoom: 1,
+            croppingMinZoom: 0.5,
+            croppingMaxZoom: 2,
           }}
-          setState={setAvatar}
+          setAvatar={setAvatar}
         />
       </div>
     </div>
