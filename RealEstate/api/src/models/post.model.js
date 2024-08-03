@@ -11,7 +11,7 @@ const postSchema = new mongoose.Schema(
       required: true,
     },
     images: {
-      type: String,
+      type: [String], // Change from 'String' to 'Array of Strings'
       required: true,
     },
     address: {
@@ -40,7 +40,12 @@ const postSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["apartment", "house", "land"],
+      enum: ["rent", "buy"], // Update enum to include 'rent' and 'buy'
+      required: true,
+    },
+    property: { // Added property type
+      type: String,
+      enum: ["apartment", "house", "condo", "land"],
       required: true,
     },
     status: {

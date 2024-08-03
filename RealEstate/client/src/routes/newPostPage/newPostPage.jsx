@@ -17,9 +17,9 @@ function NewPostPage() {
     e.preventDefault();
     const formData = new FormData(e.target);
     const inputs = Object.fromEntries(formData);
-
+  
     console.log(inputs);
-
+  
     try {
       const res = await apiRequest.post("/posts", {
         postData: {
@@ -30,7 +30,7 @@ function NewPostPage() {
           bedroom: parseInt(inputs.bedroom),
           bathroom: parseInt(inputs.bathroom),
           type: inputs.type,
-          property: inputs.property,
+          property: inputs.property, // Added property type
           latitude: inputs.latitude,
           longitude: inputs.longitude,
           images: images,
@@ -46,12 +46,14 @@ function NewPostPage() {
           restaurant: parseInt(inputs.restaurant),
         },
       });
-      navigate("/" + res.data.id);
+      
+      navigate("/" + res.data.data._id);
     } catch (err) {
       console.log(err);
-      setError(error);
+      setError(err.message); // Corrected error handling
     }
   };
+  
 
   return (
     <div className="newPostPage">
@@ -170,7 +172,7 @@ function NewPostPage() {
             sources: ["local"],
             showAdvancedOptions: false,
             cropping: false,
-            multiple: false,
+            multiple: true,
             defaultSource: "local",
             maxFileSize: 10000000,
             folder: "avatars",
